@@ -1,0 +1,55 @@
+---
+name: some-name
+
+releases: [{name: kafka, version: 0+dev.1}]
+
+stemcells:
+- alias: &stemcell only-stemcell
+  os: Windows
+  version: "3.1"
+
+instance_groups:
+- name: kafka_server
+  instances: 1
+  jobs:
+  - name: kafka_server
+    release: kafka
+    properties:
+      default_replication_factor: 3
+      auto_create_topics: true
+      network: *network
+  vm_type: small
+  persistent_disk_type: ten
+  stemcell: *stemcell
+  networks:
+  - name: &network example-network
+  azs: [example-az]
+- name: zookeeper_server
+  instances: 1
+  jobs:
+  - name: zookeeper_server
+    release: kafka
+  vm_type: medium
+  persistent_disk_type: twenty
+  stemcell: *stemcell
+  networks:
+  - name: *network
+  azs: [example-az]
+- name: smoke_tests
+  instances: 1
+  lifecycle: errand
+  jobs:
+  - name: smoke_tests
+    release: kafka
+  vm_type: medium
+  stemcell: *stemcell
+  networks:
+  - name: *network
+  azs: [example-az]
+
+update:
+  canaries: 1
+  max_in_flight: 10
+  canary_watch_time: 30000-240000
+  update_watch_time: 30000-240000
+  serial: false

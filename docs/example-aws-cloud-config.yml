@@ -1,0 +1,53 @@
+networks:
+
+- name: kafka
+  type: manual
+  subnets:
+  - range: 10.0.6.0/24
+    gateway: 10.0.6.1
+    reserved: [10.0.6.2 - 10.0.6.4]
+    cloud_properties: {subnet: subnet-REPLACE}
+
+- name: multi-az
+  type: manual
+  subnets:
+  - range: 10.0.3.0/24
+    gateway: 10.0.3.1
+    reserved: [10.0.3.2 - 10.0.3.4]
+    az: az-1
+    cloud_properties: {subnet: subnet-REPLACE}
+  - range: 10.0.4.0/24
+    gateway: 10.0.4.1
+    reserved: [10.0.4.2 - 10.0.4.4]
+    az: az-2
+    cloud_properties: {subnet: subnet-REPLACE}
+
+vm_types:
+- name: small
+  cloud_properties:
+    instance_type: t2.micro
+- name: medium
+  cloud_properties:
+    instance_type: m3.medium
+
+disk_types:
+- name: ten
+  disk_size: 10_000
+  cloud_properties: {type: gp2}
+- name: fifty
+  disk_size: 50_000
+  cloud_properties: {type: gp2}
+
+compilation:
+  workers: 2
+  reuse_compilation_vms: true
+  network: kafka # arbitrary!
+  cloud_properties:
+    availability_zone: eu-west-1a
+    instance_type: c3.large
+
+azs:
+- name: az-1
+  cloud_properties: {availability_zone: eu-west-1a}
+- name: az-2
+  cloud_properties: {availability_zone: eu-west-1b}

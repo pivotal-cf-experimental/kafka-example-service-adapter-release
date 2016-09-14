@@ -1,0 +1,8 @@
+---
+name: odb-service-adapter
+
+dependencies:
+- go
+
+files:
+  - github.com/pivotal-cf-experimental/kafka-example-service-adapter/**/*

@@ -1,0 +1,11 @@
+[
+  {
+    "plan": "small"
+  },
+  {
+    "plan": "small",
+    "arbitrary_params": {
+      "auto_create_topics": true
+    }
+  }
+]

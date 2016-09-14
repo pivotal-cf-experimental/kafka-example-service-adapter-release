@@ -1,0 +1,8 @@
+---
+name: kafka-service-adapter
+
+packages: [odb-service-adapter]
+
+templates: {}
+
+properties: {}

@@ -1,0 +1,19 @@
+vm_types:
+- name: medium
+  cloud_properties: {}
+
+networks:
+- name: kafka-broker
+  subnets:
+  - cloud_properties:
+      name: random
+    range: 10.244.9.0/28
+    reserved:
+    - 10.244.9.1
+
+compilation:
+  cloud_properties:
+    name: random
+  network: kafka-broker
+  reuse_compilation_vms: true
+  workers: 5
