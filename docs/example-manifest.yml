@@ -106,12 +106,12 @@ instance_groups:
       - name: register-broker
         release: *broker-release
         properties:
-          broker_name: &broker_name kafka-<%= dev_env %>
+          broker_name: &broker_name kafka-dev
           disable_ssl_cert_verification: true
           cf: &cf
-            api_url: https://api.services-enablement-bosh-[<from cloud config>]-aws.cf-app.com
-            admin_username: admin
-            admin_password: jeeL2zuviucha2Eichoh
+            api_url: https://api.example.com
+            admin_username: example_user
+            admin_password: example_password
     vm_type: <from cloud config>
     stemcell: trusty
     networks: [{name: services}]
