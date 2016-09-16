@@ -71,7 +71,7 @@ instance_groups:
                     instances: 1
                     azs: [[<from cloud config>]]
                     persistent_disk: <from cloud config>
-                    networks: networks: [<from cloud config>]
+                    networks: [<from cloud config>]
                   - name: zookeeper_server
                     vm_type: <from cloud config>
                     instances: 1
