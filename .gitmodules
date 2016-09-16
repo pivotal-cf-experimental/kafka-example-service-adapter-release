@@ -1,3 +1,0 @@
-[submodule "src/github.com/pivotal-cf-experimental/kafka-example-service-adapter"]
-	path = src/github.com/pivotal-cf-experimental/kafka-example-service-adapter
-	url = git@github.com:pivotal-cf-experimental/kafka-example-service-adapter.git
