@@ -1,0 +1,94 @@
+name: kafka-on-demand-broker
+
+director_uuid: <BOSH_LITE_UUID>
+
+releases:
+- name: &broker-release on-demand-service-broker
+  version: latest
+- name: &service-adapter-release kafka-example-service-adapter
+  version: latest
+- name: &service-release kafka-example-service
+  version: latest
+
+stemcells:
+- alias: trusty
+  os: ubuntu-trusty
+  version: latest
+
+instance_groups:
+- name: broker
+  instances: 1
+  vm_type: container
+  persistent_disk_type: ten
+  stemcell: trusty
+  azs: [lite]
+  networks:
+  - name: kafka
+  jobs:
+  - name: kafka-service-adapter
+    release: *service-adapter-release
+  - name: admin_tools
+    release: *service-release
+  - name: broker
+    release: *broker-release
+    properties:
+      port: 8080
+      username: broker #or replace with your own
+      password: password #or replace with your own
+      disable_ssl_cert_verification: true
+      bosh:
+        url: <BOSH_LITE_URL>
+        authentication:
+          basic:
+            username: admin
+            password: admin
+      cf:
+        url: https://api.<PCF_DEV_DOMAIN>
+        authentication:
+          url: https://uaa.<PCF_DEV_DOMAIN>
+          user_credentials:
+            username: admin
+            password: admin
+      service_adapter:
+        path: /var/vcap/packages/odb-service-adapter/bin/service-adapter
+      service_deployment:
+        releases:
+        - name: *service-release
+          version: latest
+          jobs: [kafka_server, zookeeper_server]
+        stemcell:
+          os: ubuntu-trusty
+          version: latest
+      service_catalog:
+        id: D94A086D-203D-4966-A6F1-60A9E2300F72
+        service_name: kafka-service-with-odb
+        service_description: Kafka Service
+        bindable: true
+        plan_updatable: true
+        tags: [kafka]
+        plans:
+        - name: small
+          plan_id: 11789210-D743-4C65-9D38-C80B29F4D9C8
+          description: A Kafka deployment with a single instance of each job and persistent disk
+          instance_groups:
+          - name: kafka_server
+            vm_type: container
+            instances: 1
+            persistent_disk_type: ten
+            azs: [lite]
+            networks: [kafka]
+          - name: zookeeper_server
+            vm_type: container
+            instances: 1
+            persistent_disk_type: ten
+            azs: [lite]
+            networks: [kafka]
+          properties:
+            auto_create_topics: true
+            default_replication_factor: 1
+
+update:
+  canaries: 1
+  canary_watch_time: 3000-180000
+  update_watch_time: 3000-180000
+  max_in_flight: 4

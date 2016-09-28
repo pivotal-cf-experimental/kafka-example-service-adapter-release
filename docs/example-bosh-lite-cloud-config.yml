@@ -1,19 +1,28 @@
 vm_types:
-- name: medium
+- name: container
   cloud_properties: {}
 
 networks:
-- name: kafka-broker
+- name: kafka
+  type: manual
   subnets:
-  - cloud_properties:
-      name: random
-    range: 10.244.9.0/28
-    reserved:
-    - 10.244.9.1
+  - range: 10.244.0.0/24
+    gateway: 10.244.0.1
+    az: lite
+    cloud_properties: {}
+
+disk_types:
+- name: ten
+  disk_size: 10_000
+  cloud_properties: {}
+
+azs:
+- name: lite
+  cloud_properties: {}
 
 compilation:
-  cloud_properties:
-    name: random
-  network: kafka-broker
+  workers: 2
   reuse_compilation_vms: true
-  workers: 5
+  network: kafka
+  az: lite
+  cloud_properties: {}
