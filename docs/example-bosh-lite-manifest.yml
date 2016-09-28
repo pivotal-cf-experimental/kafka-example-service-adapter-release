@@ -3,89 +3,170 @@ name: kafka-on-demand-broker
 director_uuid: <BOSH_LITE_UUID>
 
 releases:
-- name: &broker-release on-demand-service-broker
-  version: latest
-- name: &service-adapter-release kafka-example-service-adapter
-  version: latest
-- name: &service-release kafka-example-service
-  version: latest
+  - name: &broker-release on-demand-service-broker
+    version: latest
+  - name: &service-adapter-release kafka-example-service-adapter
+    version: latest
+  - name: &kafka-service-release kafka-service
+    version: latest
+  - name: service-metrics
+    version: latest
+  - name: loggregator
+    version: latest
+  - name: routing
+    version: latest
+  - name: syslog
+    version: latest
 
 stemcells:
-- alias: trusty
-  os: ubuntu-trusty
-  version: latest
+  - alias: trusty
+    os: ubuntu-trusty
+    version: latest
 
 instance_groups:
-- name: broker
-  instances: 1
-  vm_type: container
-  persistent_disk_type: ten
-  stemcell: trusty
-  azs: [lite]
-  networks:
-  - name: kafka
-  jobs:
-  - name: kafka-service-adapter
-    release: *service-adapter-release
-  - name: admin_tools
-    release: *service-release
   - name: broker
-    release: *broker-release
-    properties:
-      port: 8080
-      username: broker #or replace with your own
-      password: password #or replace with your own
-      disable_ssl_cert_verification: true
-      bosh:
-        url: <BOSH_LITE_URL>
-        authentication:
-          basic:
-            username: admin
-            password: admin
-      cf:
-        url: https://api.<PCF_DEV_DOMAIN>
-        authentication:
-          url: https://uaa.<PCF_DEV_DOMAIN>
-          user_credentials:
-            username: admin
-            password: admin
-      service_adapter:
-        path: /var/vcap/packages/odb-service-adapter/bin/service-adapter
-      service_deployment:
-        releases:
-        - name: *service-release
-          version: latest
-          jobs: [kafka_server, zookeeper_server]
-        stemcell:
-          os: ubuntu-trusty
-          version: latest
-      service_catalog:
-        id: D94A086D-203D-4966-A6F1-60A9E2300F72
-        service_name: kafka-service-with-odb
-        service_description: Kafka Service
-        bindable: true
-        plan_updatable: true
-        tags: [kafka]
-        plans:
-        - name: small
-          plan_id: 11789210-D743-4C65-9D38-C80B29F4D9C8
-          description: A Kafka deployment with a single instance of each job and persistent disk
-          instance_groups:
-          - name: kafka_server
-            vm_type: container
-            instances: 1
-            persistent_disk_type: ten
-            azs: [lite]
-            networks: [kafka]
-          - name: zookeeper_server
-            vm_type: container
-            instances: 1
-            persistent_disk_type: ten
-            azs: [lite]
-            networks: [kafka]
-          properties:
-            auto_create_topics: true
-            default_replication_factor: 1
+    instances: 1
+    jobs:
+      - name: broker
+        release: *broker-release
+        properties:
+          port: 8080
+          username: broker #or replace with your own
+          password: password #or replace with your own
+          disable_ssl_cert_verification: true
+          bosh:
+            url: <BOSH_LITE_URL>
+            authentication:
+              basic:
+                username: admin #or replace with your own
+                password: admin #or replace with your own
+          cf:
+            url: https://api.<CF_DOMAIN>
+            authentication:
+              url: https://uaa.<CF_DOMAIN>
+              user_credentials:
+                username: admin
+                password: admin
+          service_deployment:
+            releases:
+              - name: *kafka-service-release
+                version: latest
+                jobs: [kafka_server, zookeeper_server]
+              - name: loggregator
+                version: latest
+                jobs: [metron_agent]
+            stemcell:
+              os: ubuntu-trusty
+              version: latest
+          service_catalog:
+            id: D94A086D-203D-4966-A6F1-60A9E2300F72 #create this yourself, can be human readable
+            service_name: kafka-service-with-odb
+            service_description: Kafka Service
+            bindable: true
+            plan_updatable: true
+            tags: [kafka]
+            plans:
+              - name: small
+                plan_id: 11789210-D743-4C65-9D38-C80B29F4D9C8 # create this yourself, can be human readable
+                description: A Kafka deployment with a single instance of each job and persistent disk
+                instance_groups:
+                  - name: kafka_server
+                    vm_type: container
+                    instances: 1
+                    azs: [lite] #from your cloud config
+                    persistent_disk_type: ten #from your cloud config
+                    networks: [kafka-instances] #from your cloud config
+                  - name: zookeeper_server
+                    vm_type: container
+                    instances: 1
+                    persistent_disk_type: ten #from your cloud config
+                    azs: [lite] #from your cloud config
+                    networks: [kafka-instances] #from your cloud config
+                properties:
+                  auto_create_topics: true
+                  default_replication_factor: 1
+                  logging:
+                    syslog_address: <SYSLOG URL> #of your syslog destination
+                    syslog_port: <SYSLOG_PORT> #of your syslog destination
+                    loggregator_etcd_addresses: [<ETCD_IP>]
+                    loggregator_shared_secret: <LOGGREGATOR_SECRET> #from your cf manifest
+
+      - name: kafka-service-adapter
+        release: *service-adapter-release
+
+      - name: admin_tools
+        release: *kafka-service-release
+
+      - name: service-metrics
+        release: service-metrics
+        properties:
+          service_metrics:
+            execution_interval_seconds: 10
+            origin: kafka-on-demand-broker
+            metrics_command: /var/vcap/jobs/odb-metrics/bin/gather-metrics.sh
+            metrics_command_args: []
+            monit_dependencies: [broker]
+      - name: metron_agent
+        release: loggregator
+        properties:
+          metron_agent:
+            deployment: kafka-on-demand-broker
+            protocols:
+              - tcp
+          metron_endpoint:
+            shared_secret:  <LOGGREGATOR_SECRET> #from your cf manifest
+          loggregator:
+            etcd:
+              machines: [<ETCD_IP>]
+          loggregator_endpoint:
+            shared_secret:  <LOGGREGATOR_SECRET> #from your cf manifest
+      - name: odb-metrics
+        release: *broker-release
+      - name: route_registrar
+        release: routing
+        properties:
+          nats:
+            machines: [<NATS_IP>]
+            port: <NATS_PORT>
+            user: <NATS_USER>
+            password: <NATS_PASSWORD>
+          route_registrar:
+            routes:
+              - name: kafka-service-broker
+                registration_interval: 20s
+                port: 8080
+                uris: [kafka-service-broker.<CF_DOMAIN>]
+      - name: syslog_forwarder
+        release: syslog
+        properties:
+          syslog:
+            address: <SYSLOG URL> #of your syslog destination
+            port: <SYSLOG_PORT> #of your syslog destination
+            transport: udp
+
+    vm_type: container
+    stemcell: trusty
+    azs: [lite]
+    networks:
+      - name: kafka #from your cloud config
+
+  - name: register-broker
+    lifecycle: errand
+    instances: 1
+    jobs:
+      - name: register-broker
+        release: *broker-release
+        properties:
+          broker_name: kafka-service-with-odb
+          disable_ssl_cert_verification: true
+          cf:
+            api_url: https://api.<CF_DOMAIN>
+            admin_username: <CF_ADMIN_USER>
+            admin_password: <CF_ADMIN_PASSWORD>
+    vm_type: container
+    stemcell: trusty
+    networks: [{name: kafka}] #from your cloud config
+    azs: [lite]
 
 update:
   canaries: 1

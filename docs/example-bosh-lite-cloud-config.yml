@@ -11,6 +11,14 @@ networks:
     az: lite
     cloud_properties: {}
 
+- name: kafka-instances
+  type: manual
+  subnets:
+  - range: 10.244.1.0/24
+    gateway: 10.244.1.1
+    az: lite
+    cloud_properties: {}
+
 disk_types:
 - name: ten
   disk_size: 10_000
