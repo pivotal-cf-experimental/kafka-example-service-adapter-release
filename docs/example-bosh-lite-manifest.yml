@@ -1,6 +1,6 @@
 name: kafka-on-demand-broker
 
-director_uuid: <BOSH_LITE_UUID>
+director_uuid: <BOSH_DIRECTOR_UUID>
 
 releases:
   - name: &broker-release on-demand-service-broker
@@ -35,7 +35,7 @@ instance_groups:
           password: password #or replace with your own
           disable_ssl_cert_verification: true
           bosh:
-            url: <BOSH_LITE_URL>
+            url: <BOSH_URL>
             authentication:
               basic:
                 username: admin #or replace with your own
