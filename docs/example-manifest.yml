@@ -33,20 +33,26 @@ instance_groups:
           port: 8080
           username: broker #or replace with your own
           password: password #or replace with your own
-          disable_ssl_cert_verification: true
+          disable_ssl_cert_verification: <true | false> # optional
           bosh:
             url: <BOSH_URL>
-            authentication:
+            root_ca_cert: <ca cert for bosh director and associated UAA> # optional, see SSL certificates
+            authentication: # either basic or uaa, not both as shown
               basic:
                 username: admin #or replace with your own
                 password: admin #or replace with your own
+              uaa:
+                url: <BOSH UAA URL> # often on the same host as the director, on a different port
+                client_id: <BOSH_CLIENT_ID
+                client_secret: <BOSH_CLIENT_SECRET>
           cf:
             url: https://api.<CF_DOMAIN>
+            root_ca_cert: <ca cert for cloud controller> # if disable_ssl_cert_verification: false, see SSL certificates
             authentication:
               url: https://uaa.<CF_DOMAIN>
               user_credentials:
-                username: admin
-                password: admin
+                username: <CF_ADMIN_USERNAME>
+                password: <CF_ADMIN_PASSWORD>
           service_deployment:
             releases:
               - name: *kafka-service-release
@@ -73,9 +79,9 @@ instance_groups:
                   - name: kafka_server
                     vm_type: container
                     instances: 1
+                    networks: [kafka-instances] #from your cloud config
                     azs: [lite] #from your cloud config
                     persistent_disk_type: ten #from your cloud config
-                    networks: [kafka-instances] #from your cloud config
                   - name: zookeeper_server
                     vm_type: container
                     instances: 1
@@ -102,7 +108,7 @@ instance_groups:
         properties:
           service_metrics:
             execution_interval_seconds: 10
-            origin: kafka-on-demand-broker
+            origin: kafka-on-demand-broker #this tag will appear in the metrics under the 'origin' key
             metrics_command: /var/vcap/jobs/odb-metrics/bin/gather-metrics.sh
             metrics_command_args: []
             monit_dependencies: [broker]
