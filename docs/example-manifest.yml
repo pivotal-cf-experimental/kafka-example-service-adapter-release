@@ -10,13 +10,13 @@ releases:
   - name: &kafka-service-release kafka-service
     version: latest
   - name: service-metrics
-    version: latest
+    version: 1.5.0
   - name: loggregator
-    version: latest
+    version: 58   # or later
   - name: routing
-    version: latest
+    version: 0.140.0  # or later
   - name: syslog
-    version: latest
+    version: 7  # or later
 
 stemcells:
   - alias: trusty
@@ -109,8 +109,6 @@ instance_groups:
           service_metrics:
             execution_interval_seconds: 10
             origin: kafka-on-demand-broker #this tag will appear in the metrics under the 'origin' key
-            metrics_command: /var/vcap/jobs/odb-metrics/bin/gather-metrics.sh
-            metrics_command_args: []
             monit_dependencies: [broker]
       - name: metron_agent
         release: loggregator
@@ -126,7 +124,7 @@ instance_groups:
               machines: [<ETCD_IP>]
           loggregator_endpoint:
             shared_secret:  <LOGGREGATOR_SECRET> #from your cf manifest
-      - name: odb-metrics
+      - name: service-metrics-adapter
         release: *broker-release
       - name: route_registrar
         release: routing
