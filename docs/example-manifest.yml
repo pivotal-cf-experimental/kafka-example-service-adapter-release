@@ -77,17 +77,17 @@ instance_groups:
                 description: A Kafka deployment with a single instance of each job and persistent disk
                 instance_groups:
                   - name: kafka_server
-                    vm_type: container
+                    vm_type: <from cloud config>
                     instances: 1
-                    networks: [kafka-instances] #from your cloud config
-                    azs: [lite] #from your cloud config
+                    networks: [<from cloud config>] #from your cloud config
+                    azs: [<from cloud config>] #from your cloud config
                     persistent_disk_type: ten #from your cloud config
                   - name: zookeeper_server
-                    vm_type: container
+                    vm_type: <from cloud config>
                     instances: 1
                     persistent_disk_type: ten #from your cloud config
-                    azs: [lite] #from your cloud config
-                    networks: [kafka-instances] #from your cloud config
+                    azs: [<from cloud config>] #from your cloud config
+                    networks: [<from cloud config>] #from your cloud config
                 properties:
                   auto_create_topics: true
                   default_replication_factor: 1
@@ -110,6 +110,7 @@ instance_groups:
             execution_interval_seconds: 10
             origin: kafka-on-demand-broker #this tag will appear in the metrics under the 'origin' key
             monit_dependencies: [broker]
+
       - name: metron_agent
         release: loggregator
         properties:
@@ -124,8 +125,10 @@ instance_groups:
               machines: [<ETCD_IP>]
           loggregator_endpoint:
             shared_secret:  <LOGGREGATOR_SECRET> #from your cf manifest
+
       - name: service-metrics-adapter
         release: *broker-release
+
       - name: route_registrar
         release: routing
         properties:
@@ -140,6 +143,7 @@ instance_groups:
                 registration_interval: 20s
                 port: 8080
                 uris: [kafka-service-broker.<CF_DOMAIN>]
+
       - name: syslog_forwarder
         release: syslog
         properties:
@@ -148,11 +152,10 @@ instance_groups:
             port: <SYSLOG_PORT> #of your syslog destination
             transport: udp
 
-    vm_type: container
+    vm_type: <from cloud config>
     stemcell: trusty
-    azs: [lite]
-    networks:
-      - name: kafka #from your cloud config
+    azs: [<from cloud config>]
+    networks: [{name: <from cloud config>}] #from your cloud config
 
   - name: register-broker
     lifecycle: errand
@@ -169,8 +172,8 @@ instance_groups:
             admin_password: <CF_ADMIN_PASSWORD>
     vm_type: container
     stemcell: trusty
-    networks: [{name: kafka}] #from your cloud config
-    azs: [lite]
+    networks: [{name: <from cloud config>}]
+    azs: [<from cloud config>]
 
 update:
   canaries: 1
