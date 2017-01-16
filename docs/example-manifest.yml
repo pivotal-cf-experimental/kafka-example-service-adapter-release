@@ -33,7 +33,7 @@ instance_groups:
           port: 8080
           username: broker #or replace with your own
           password: password #or replace with your own
-          disable_ssl_cert_verification: <true | false> # optional
+          disable_ssl_cert_verification: &disable_ssl_cert_verification <true | false> # optional
           bosh:
             url: <BOSH_URL>
             root_ca_cert: <ca cert for bosh director and associated UAA> # optional, see SSL certificates
@@ -164,13 +164,66 @@ instance_groups:
       - name: register-broker
         release: *broker-release
         properties:
-          broker_name: kafka-service-with-odb
-          disable_ssl_cert_verification: true
-          cf:
+          broker_name: &broker_name kafka-service-with-odb
+          disable_ssl_cert_verification: *disable_ssl_cert_verification
+          cf: &cf
             api_url: https://api.<CF_DOMAIN>
             admin_username: <CF_ADMIN_USER>
             admin_password: <CF_ADMIN_PASSWORD>
-    vm_type: container
+    vm_type: <from cloud config>
+    stemcell: trusty
+    networks: [{name: <from cloud config>}] #from your cloud config
+    azs: [<from cloud config>]
+
+  - name: deregister-broker
+    lifecycle: errand
+    instances: 1
+    jobs:
+      - name: deregister-broker
+        release: *broker-release
+        properties:
+          broker_name: *broker_name
+          disable_ssl_cert_verification: *disable_ssl_cert_verification
+          cf:
+            <<: *cf
+    vm_type: <from cloud config>
+    stemcell: trusty
+    networks: [{name: <from cloud config>}]
+    azs: [<from cloud config>]
+
+  - name: delete-all-service-instances
+    lifecycle: errand
+    instances: 1
+    jobs:
+      - name: delete-all-service-instances
+        release: *broker-release
+        properties:
+          disable_ssl_cert_verification: *disable_ssl_cert_verification
+          cf:
+            <<: *cf
+    vm_type: <from cloud config>
+    stemcell: trusty
+    networks: [{name: <from cloud config>}]
+    azs: [<from cloud config>]
+
+  - name: upgrade-all-service-instances
+    lifecycle: errand
+    instances: 1
+    jobs:
+      - name: upgrade-all-service-instances
+        release: *broker-release
+    vm_type: <from cloud config>
+    stemcell: trusty
+    networks: [{name: <from cloud config>}]
+    azs: [<from cloud config>]
+
+  - name: orphan-deployments
+    lifecycle: errand
+    instances: 1
+    jobs:
+      - name: orphan-deployments
+        release: *broker-release
+    vm_type: <from cloud config>
     stemcell: trusty
     networks: [{name: <from cloud config>}]
     azs: [<from cloud config>]
