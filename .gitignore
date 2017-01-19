@@ -6,3 +6,7 @@ config/dev.yml
 config/private.yml
 /bin
 /pkg
+releases/*.tgz
+releases/**/*.tgz
+.final_builds/jobs/**/*.tgz
+.final_builds/packages/**/*.tgz
