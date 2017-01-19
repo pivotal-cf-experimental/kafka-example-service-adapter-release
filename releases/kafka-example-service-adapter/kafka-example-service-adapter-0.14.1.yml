@@ -1,0 +1,22 @@
+---
+packages:
+- name: go
+  version: cce4270e614be07d19c9e15ba795472a12e1489c
+  fingerprint: cce4270e614be07d19c9e15ba795472a12e1489c
+  sha1: 5ce57dc9a376be68afcd62474559d20b4741489e
+  dependencies: []
+- name: odb-service-adapter
+  version: c66e4ad5ddfa3cd49bd668df5b145039231c7bcb
+  fingerprint: c66e4ad5ddfa3cd49bd668df5b145039231c7bcb
+  sha1: c8af12299de32a7e1c0220302dd078286fcf50bb
+  dependencies:
+  - go
+jobs:
+- name: kafka-service-adapter
+  version: 73336ae579c9bcd5e21f3aaf2e8e738b57c5ccc2
+  fingerprint: 73336ae579c9bcd5e21f3aaf2e8e738b57c5ccc2
+  sha1: c4eee03254e30f44d3a15bfaa52443c53086fc9d
+commit_hash: 933e2bbd
+uncommitted_changes: true
+name: kafka-example-service-adapter
+version: 0.14.1
