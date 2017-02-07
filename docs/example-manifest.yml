@@ -33,21 +33,21 @@ instance_groups:
           port: 8080
           username: broker #or replace with your own
           password: password #or replace with your own
-          disable_ssl_cert_verification: &disable_ssl_cert_verification <true | false> # optional
+          disable_ssl_cert_verification: &disable_ssl_cert_verification <TRUE | FALSE> # optional
           bosh:
             url: <BOSH_URL>
-            root_ca_cert: <ca cert for bosh director and associated UAA> # optional, see SSL certificates
+            root_ca_cert: <CA_CERT_FOR_BOSH_DIRECTOR_AND_ASSOCIATED_UAA> # optional, see SSL certificates
             authentication: # either basic or uaa, not both as shown
               basic:
                 username: admin #or replace with your own
                 password: admin #or replace with your own
               uaa:
-                url: <BOSH UAA URL> # often on the same host as the director, on a different port
+                url: <BOSH_UAA_URL> # often on the same host as the director, on a different port
                 client_id: <BOSH_CLIENT_ID
                 client_secret: <BOSH_CLIENT_SECRET>
           cf:
             url: https://api.<CF_DOMAIN>
-            root_ca_cert: <ca cert for cloud controller> # if disable_ssl_cert_verification: false, see SSL certificates
+            root_ca_cert: <CA_CERT_FOR_CLOUD_CONTROLLER> # if disable_ssl_cert_verification: false, see SSL certificates
             authentication:
               url: https://uaa.<CF_DOMAIN>
               user_credentials:
@@ -77,17 +77,17 @@ instance_groups:
                 description: A Kafka deployment with a single instance of each job and persistent disk
                 instance_groups:
                   - name: kafka_server
-                    vm_type: <from cloud config>
+                    vm_type: <FROM_CLOUD_CONFIG>
                     instances: 1
-                    networks: [<from cloud config>] #from your cloud config
-                    azs: [<from cloud config>] #from your cloud config
+                    networks: [<FROM_CLOUD_CONFIG>] #from your cloud config
+                    azs: [<FROM_CLOUD_CONFIG>] #from your cloud config
                     persistent_disk_type: ten #from your cloud config
                   - name: zookeeper_server
-                    vm_type: <from cloud config>
+                    vm_type: <FROM_CLOUD_CONFIG>
                     instances: 1
                     persistent_disk_type: ten #from your cloud config
-                    azs: [<from cloud config>] #from your cloud config
-                    networks: [<from cloud config>] #from your cloud config
+                    azs: [<FROM_CLOUD_CONFIG>] #from your cloud config
+                    networks: [<FROM_CLOUD_CONFIG>] #from your cloud config
                 properties:
                   auto_create_topics: true
                   default_replication_factor: 1
@@ -152,10 +152,10 @@ instance_groups:
             port: <SYSLOG_PORT> #of your syslog destination
             transport: udp
 
-    vm_type: <from cloud config>
+    vm_type: <FROM_CLOUD_CONFIG>
     stemcell: trusty
-    azs: [<from cloud config>]
-    networks: [{name: <from cloud config>}] #from your cloud config
+    azs: [<FROM_CLOUD_CONFIG>]
+    networks: [{name: <FROM_CLOUD_CONFIG>}] #from your cloud config
 
   - name: register-broker
     lifecycle: errand
@@ -170,10 +170,10 @@ instance_groups:
             api_url: https://api.<CF_DOMAIN>
             admin_username: <CF_ADMIN_USER>
             admin_password: <CF_ADMIN_PASSWORD>
-    vm_type: <from cloud config>
+    vm_type: <FROM_CLOUD_CONFIG>
     stemcell: trusty
-    networks: [{name: <from cloud config>}] #from your cloud config
-    azs: [<from cloud config>]
+    networks: [{name: <FROM_CLOUD_CONFIG>}] #from your cloud config
+    azs: [<FROM_CLOUD_CONFIG>]
 
   - name: deregister-broker
     lifecycle: errand
@@ -186,10 +186,10 @@ instance_groups:
           disable_ssl_cert_verification: *disable_ssl_cert_verification
           cf:
             <<: *cf
-    vm_type: <from cloud config>
+    vm_type: <FROM_CLOUD_CONFIG>
     stemcell: trusty
-    networks: [{name: <from cloud config>}]
-    azs: [<from cloud config>]
+    networks: [{name: <FROM_CLOUD_CONFIG>}]
+    azs: [<FROM_CLOUD_CONFIG>]
 
   - name: delete-all-service-instances
     lifecycle: errand
@@ -201,10 +201,10 @@ instance_groups:
           disable_ssl_cert_verification: *disable_ssl_cert_verification
           cf:
             <<: *cf
-    vm_type: <from cloud config>
+    vm_type: <FROM_CLOUD_CONFIG>
     stemcell: trusty
-    networks: [{name: <from cloud config>}]
-    azs: [<from cloud config>]
+    networks: [{name: <FROM_CLOUD_CONFIG>}]
+    azs: [<FROM_CLOUD_CONFIG>]
 
   - name: upgrade-all-service-instances
     lifecycle: errand
@@ -212,10 +212,10 @@ instance_groups:
     jobs:
       - name: upgrade-all-service-instances
         release: *broker-release
-    vm_type: <from cloud config>
+    vm_type: <FROM_CLOUD_CONFIG>
     stemcell: trusty
-    networks: [{name: <from cloud config>}]
-    azs: [<from cloud config>]
+    networks: [{name: <FROM_CLOUD_CONFIG>}]
+    azs: [<FROM_CLOUD_CONFIG>]
 
   - name: orphan-deployments
     lifecycle: errand
@@ -223,10 +223,10 @@ instance_groups:
     jobs:
       - name: orphan-deployments
         release: *broker-release
-    vm_type: <from cloud config>
+    vm_type: <FROM_CLOUD_CONFIG>
     stemcell: trusty
-    networks: [{name: <from cloud config>}]
-    azs: [<from cloud config>]
+    networks: [{name: <FROM_CLOUD_CONFIG>}]
+    azs: [<FROM_CLOUD_CONFIG>]
 
 update:
   canaries: 1
