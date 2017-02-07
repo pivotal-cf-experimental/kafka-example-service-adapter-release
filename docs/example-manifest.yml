@@ -21,7 +21,7 @@ releases:
 stemcells:
   - alias: trusty
     os: ubuntu-trusty
-    version: latest
+    version: <STEMCELL_VERSION>
 
 instance_groups:
   - name: broker
@@ -56,14 +56,14 @@ instance_groups:
           service_deployment:
             releases:
               - name: *kafka-service-release
-                version: latest
+                version: <KAFKA_SERVICE_VERSION>
                 jobs: [kafka_server, zookeeper_server]
               - name: loggregator
-                version: latest
+                version: <LOGGREGATOR_VERSION>
                 jobs: [metron_agent]
             stemcell:
               os: ubuntu-trusty
-              version: latest
+              version: <STEMCELL_VERSION>
           service_catalog:
             id: D94A086D-203D-4966-A6F1-60A9E2300F72 #create this yourself, can be human readable
             service_name: kafka-service-with-odb
