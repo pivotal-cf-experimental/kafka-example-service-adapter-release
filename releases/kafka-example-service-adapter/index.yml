@@ -6,4 +6,6 @@ builds:
     version: 0.12.4
   ce68effd-9423-406d-98dc-120b3444f800:
     version: 0.14.1
+  7b0d9ab2-30d4-42f0-a1d4-c4ae244bcef0:
+    version: 0.15.0-rc-1
 format-version: '2'
