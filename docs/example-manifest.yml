@@ -197,10 +197,6 @@ instance_groups:
     jobs:
       - name: delete-all-service-instances
         release: *broker-release
-        properties:
-          disable_ssl_cert_verification: *disable_ssl_cert_verification
-          cf:
-            <<: *cf
     vm_type: <FROM_CLOUD_CONFIG>
     stemcell: trusty
     networks: [{name: <FROM_CLOUD_CONFIG>}]
