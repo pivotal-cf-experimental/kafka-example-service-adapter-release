@@ -1,12 +1,15 @@
 #!/bin/bash -eu
 
-abspath() {
-  cd "$1"
-  pwd
-}
+pushd $(dirname $0)/..
+  export GOPATH=$PWD
+  export PATH=$GOPATH/bin:$PATH
 
-cd $(dirname $0)/..
-export GOPATH=$PWD
+  pushd src/github.com/pivotal-cf-experimental/kafka-example-service-adapter
+    go get -v github.com/tools/godep
+    godep restore
 
-cd src/github.com/pivotal-cf-experimental/kafka-example-service-adapter
-ginkgo -r -randomizeAllSpecs -randomizeSuites -race -keepGoing -failOnPending -cover
+    go install -v github.com/onsi/ginkgo/ginkgo
+
+    ginkgo -r -randomizeAllSpecs -randomizeSuites -race -keepGoing -failOnPending -cover
+  popd
+popd
