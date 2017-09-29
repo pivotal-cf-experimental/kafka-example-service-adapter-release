@@ -10,10 +10,5 @@ releases/*.tgz
 releases/**/*.tgz
 .final_builds/jobs/**/*.tgz
 .final_builds/packages/**/*.tgz
-src/github.com/eapache/
-src/github.com/golang/
-src/github.com/klauspost/
-src/github.com/onsi/
-src/github.com/pivotal-cf/
-src/golang.org/
-src/gopkg.in/
+src/
+!./src/github.com/pivotal-cf-experimental/kafka-example-service-adapter
