@@ -2,7 +2,7 @@
 name: odb-service-adapter
 
 dependencies:
-- golang-1.11-linux
-
+  - golang-1-linux
+  
 files:
   - github.com/pivotal-cf-experimental/kafka-example-service-adapter/**/*
