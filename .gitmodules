@@ -1,3 +1,4 @@
 [submodule "src/github.com/pivotal-cf-experimental/kafka-example-service-adapter"]
 	path = src/github.com/pivotal-cf-experimental/kafka-example-service-adapter
-	url = git@github.com:pivotal-cf-experimental/kafka-example-service-adapter.git
+	url = https://github.com/pivotal-cf-experimental/kafka-example-service-adapter.git
+	pushurl = git@github.com:pivotal-cf-experimental/kafka-example-service-adapter.git
