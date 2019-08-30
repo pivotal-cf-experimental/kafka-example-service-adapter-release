@@ -4,4 +4,3 @@ update_configs:
 - package_manager: "submodules"
   directory: "/"
   update_schedule: "daily"
-hello
