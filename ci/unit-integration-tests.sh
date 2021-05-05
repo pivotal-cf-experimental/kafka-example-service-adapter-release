@@ -7,6 +7,6 @@ pushd $(dirname $0)/..
   pushd src/github.com/pivotal-cf-experimental/kafka-example-service-adapter
     go get -u github.com/onsi/ginkgo/ginkgo
 
-    ginkgo -r -randomizeAllSpecs -randomizeSuites -race -keepGoing -failOnPending -cover
+    GO111MODULE=off ginkgo -r -randomizeAllSpecs -randomizeSuites -race -keepGoing -failOnPending -cover
   popd
 popd
