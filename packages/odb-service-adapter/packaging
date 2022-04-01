@@ -7,5 +7,5 @@ source /var/vcap/packages/golang-1-linux/bosh/compile.env
 export GOBIN="${BOSH_INSTALL_TARGET}/bin"
 
 pushd github.com/pivotal-cf-experimental/kafka-example-service-adapter/cmd/service-adapter
-  go install -mod=vendor
+  go install -mod=vendor -buildvcs=false
 popd
